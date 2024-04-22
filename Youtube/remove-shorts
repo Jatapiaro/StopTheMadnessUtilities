@@ -1,0 +1,39 @@
+function waitForElementToExist(selector) {
+  return new Promise(resolve => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+
+    const observer = new MutationObserver(() => {
+      if (document.querySelectorAll(selector).length > 0) {
+        resolve(document.querySelectorAll(selector));
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+    });
+  });
+}
+
+waitForElementToExist("#title.ytd-rich-shelf-renderer").then((elements) => {
+  elements.forEach(element => {
+    const innerHTML = element.innerHTML;
+    if (innerHTML !== "Shorts") {
+      return;
+    }
+
+    const dismissible = element.closest("#dismissible");
+    if (dismissible) {
+      dismissible.style.display = "none";
+    }
+  });
+});
+
+waitForElementToExist("#endpoint[title='Shorts']").then((elements) => {
+  elements.forEach(element => {
+    element.parentNode.style.display = "none";
+  });
+});
